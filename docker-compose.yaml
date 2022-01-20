@@ -1,0 +1,46 @@
+version: '3.8'
+services: 
+    web:
+        build:
+            context: .
+        env_file: ./.env
+        command: npm start
+        volumes: 
+            - .:/app/
+            - /app/node_modules
+        ports:
+            - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+        depends_on: 
+            - mysqldb
+            - mongodb
+        environment: 
+            MYSQL_HOST: mysqldb
+            MONGODB_HOST: mongodb
+    mysqldb:
+        image: mysql
+        container_name: mysql
+        env_file: ./.env
+        environment: 
+            MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+            MYSQL_DATABASE: $MYSQL_DATABASE
+        ports:
+            - $MYSQL_LOCAL_PORT:$MYSQL_DOCKER_PORT
+        volumes:
+            - mysql:/var/lib/mysql
+            - mysql_config:/etc/mysql
+    mongodb:
+        image: mongo
+         container_name: mymongo
+        env_file: ./.env
+        environment: 
+            MONGO_INITDB_PASSWORD: $MONGO_INITDB_PASSWORD
+            MONGO_INITDB_DATABASE: $MONGO_INITDB_DATABASE
+        ports:
+            - $MYSQL_LOCAL_PORT:$MYSQL_DOCKER_PORT
+        volumes:
+            - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo-js:ro
+            - ./mongo-volume:/data/db
+
+volumes:
+    mysql:
+    mysql_config:
