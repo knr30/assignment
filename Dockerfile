@@ -1,5 +1,5 @@
 FROM node:latest
-WORKDIR /app/
+WORKDIR /tmp/node_debug.log
 COPY package.json .
 RUN npm install
 COPY . 
